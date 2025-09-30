@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- 페이지 헤더 -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>{{ chart_info.name }}</h1>
+                <p>{{ chart_info.symbol }} • {{ chart_info.exchange }} • {{ chart_info.interval }}</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'stock:stock_list' %}" class="btn btn-light">목록으로</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <!-- TradingView 차트 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">TradingView 차트</h5>
+                </div>
+                <div class="card-body">
+                    <div class="tradingview-widget-container">
+                        <div id="tradingview_chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TradingView Widget Script -->
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script type="text/javascript">
+    // TradingView 차트 초기화
+    new TradingView.widget({
+        "autosize": true,
+        "symbol": "{{ chart_info.symbol }}",
+        "interval": "{{ chart_info.interval }}",
+        "timezone": "Asia/Seoul",
+        "theme": "light",
+        "style": "1",
+        "locale": "kr",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "withdateranges": true,
+        "range": "1M",
+        "hide_side_toolbar": false,
+        "allow_symbol_change": true,
+        "details": true,
+        "hotlist": true,
+        "calendar": true,
+        "studies": [
+            "RSI@tv-basicstudies",
+            "MACD@tv-basicstudies",
+            "Stochastic@tv-basicstudies",
+            "Volume@tv-basicstudies"
+        ],
+        "container_id": "tradingview_chart"
+    });
+</script>
+
+<style>
+.tradingview-widget-container {
+    height: 700px;
+}
+
+.tradingview-widget-container > div {
+    height: 100%;
+}
+</style>
+{% endblock %}

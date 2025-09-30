@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- 페이지 헤더 -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>{{ stock_symbol.name }}</h1>
+                <p>{{ stock_symbol.symbol }} • {{ stock_symbol.exchange }} • {{ stock_symbol.category }}</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'stock:stock_list' %}" class="btn btn-light me-2">목록으로</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'stock:add_to_watchlist' stock_symbol.id %}" class="btn btn-primary">
+                    <i class="fas fa-star"></i> 관심종목 추가
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <!-- TradingView 차트 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">실시간 차트</h5>
+                </div>
+                <div class="card-body">
+                    <div class="tradingview-widget-container">
+                        <div id="tradingview_chart"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 실시간 데이터 섹션 -->
+            <div class="realtime-data-card mt-4">
+                <h3 class="mb-4">실시간 데이터</h3>
+                <div id="realtime-data" class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">데이터 로딩 중...</span>
+                        </div>
+                        <p class="mt-2 text-muted">실시간 데이터를 불러오는 중입니다...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TradingView Widget Script -->
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script type="text/javascript">
+    // TradingView 차트 초기화
+    new TradingView.widget({
+        "autosize": true,
+        "symbol": "{{ stock_symbol.symbol }}",
+        "interval": "1D",
+        "timezone": "Asia/Seoul",
+        "theme": "light",
+        "style": "1",
+        "locale": "kr",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "withdateranges": true,
+        "range": "1M",
+        "hide_side_toolbar": false,
+        "allow_symbol_change": true,
+        "details": true,
+        "hotlist": true,
+        "calendar": true,
+        "studies": [
+            "RSI@tv-basicstudies",
+            "MACD@tv-basicstudies",
+            "Stochastic@tv-basicstudies"
+        ],
+        "container_id": "tradingview_chart"
+    });
+
+    // 실시간 데이터 로드
+    function loadRealtimeData() {
+        fetch(`{% url 'stock:get_stock_data' stock_symbol.symbol %}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.values && data.values.length > 0) {
+                    const latest = data.values[0];
+                    const realtimeDataHtml = `
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                            <div class="text-center">
+                                <h6>시가</h6>
+                                <h5 class="text-primary">${parseFloat(latest.open).toFixed(2)}</h5>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                            <div class="text-center">
+                                <h6>고가</h6>
+                                <h5 class="price-up">${parseFloat(latest.high).toFixed(2)}</h5>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                            <div class="text-center">
+                                <h6>저가</h6>
+                                <h5 class="price-down">${parseFloat(latest.low).toFixed(2)}</h5>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                            <div class="text-center">
+                                <h6>종가</h6>
+                                <h5 class="price-neutral">${parseFloat(latest.close).toFixed(2)}</h5>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                            <div class="text-center">
+                                <h6>거래량</h6>
+                                <h5 class="text-warning">${parseInt(latest.volume).toLocaleString()}</h5>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                            <div class="text-center">
+                                <h6>날짜</h6>
+                                <h6 class="text-secondary">${new Date(latest.datetime).toLocaleDateString()}</h6>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('realtime-data').innerHTML = realtimeDataHtml;
+                } else {
+                    document.getElementById('realtime-data').innerHTML = `
+                        <div class="col-md-12 text-center">
+                            <p class="text-muted">데이터를 불러올 수 없습니다.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('realtime-data').innerHTML = `
+                    <div class="col-md-12 text-center">
+                        <p class="text-danger">데이터 로딩 중 오류가 발생했습니다.</p>
+                    </div>
+                `;
+            });
+    }
+
+    // 페이지 로드 시 실시간 데이터 로드
+    document.addEventListener('DOMContentLoaded', function() {
+        loadRealtimeData();
+        
+        // 5분마다 데이터 업데이트
+        setInterval(loadRealtimeData, 300000);
+    });
+</script>
+
+<style>
+.tradingview-widget-container {
+    height: 600px;
+}
+
+.tradingview-widget-container > div {
+    height: 100%;
+}
+</style>
+{% endblock %}

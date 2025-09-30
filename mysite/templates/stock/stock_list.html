@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load stock_filters %}
+
+{% block content %}
+<!-- 페이지 헤더 -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>실시간 주식 차트</h1>
+                <p>전 세계 주요 종목의 실시간 데이터와 전문적인 차트 분석을 제공합니다</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="section-header">
+                <h2>주요 종목</h2>
+                <p>다양한 자산 클래스별로 분류된 인기 종목들을 확인하세요</p>
+            </div>
+            
+            <!-- 카테고리별 주식 목록 -->
+            {% for category in categories %}
+            <div class="section-header">
+                <h3>{{ category }}</h3>
+                <p>{{ category }} 관련 주요 종목들</p>
+            </div>
+            <div class="row mb-5">
+                {% for symbol in symbols_by_category|lookup:category %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="stock-card h-100">
+                        <div class="card-body">
+                            <h6 class="stock-symbol">{{ symbol.symbol }}</h6>
+                            <p class="stock-name">{{ symbol.name }}</p>
+                            <p class="stock-exchange">{{ symbol.exchange }}</p>
+                            <span class="category-badge 
+                                {% if symbol.category == '한국주식' %}badge-korean
+                                {% elif symbol.category == '미국주식' %}badge-us
+                                {% elif symbol.category == '암호화폐' %}badge-crypto
+                                {% elif symbol.category == '외환' %}badge-forex
+                                {% elif symbol.category == '원자재' %}badge-commodity
+                                {% elif symbol.category == '채권' %}badge-bond
+                                {% else %}badge-secondary{% endif %}">
+                                {{ symbol.category }}
+                            </span>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <a href="{% url 'stock:stock_chart' symbol.symbol|urlencode %}" class="btn btn-primary btn-sm">차트보기</a>
+                                {% if user.is_authenticated %}
+                                <a href="{% url 'stock:add_to_watchlist' symbol.id %}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-star"></i> 관심종목
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- TradingView 차트 섹션 -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="section-header">
+                <h2>실시간 차트</h2>
+                <p>전 세계 주요 지수와 자산의 실시간 차트를 확인하세요</p>
+            </div>
+            <div class="card">
+                <div class="card-header bg-white">
+                    <ul class="nav nav-tabs card-header-tabs" id="chartTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="kospi-tab" data-bs-toggle="tab" data-bs-target="#kospi" type="button" role="tab" aria-controls="kospi" aria-selected="true">코스피</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="nasdaq-tab" data-bs-toggle="tab" data-bs-target="#nasdaq" type="button" role="tab" aria-controls="nasdaq" aria-selected="false">나스닥100</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="sp500-tab" data-bs-toggle="tab" data-bs-target="#sp500" type="button" role="tab" aria-controls="sp500" aria-selected="false">S&P500</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bitcoin-tab" data-bs-toggle="tab" data-bs-target="#bitcoin" type="button" role="tab" aria-controls="bitcoin" aria-selected="false">비트코인</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="dollar-tab" data-bs-toggle="tab" data-bs-target="#dollar" type="button" role="tab" aria-controls="dollar" aria-selected="false">달러</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="gold-tab" data-bs-toggle="tab" data-bs-target="#gold" type="button" role="tab" aria-controls="gold" aria-selected="false">골드</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="oil-tab" data-bs-toggle="tab" data-bs-target="#oil" type="button" role="tab" aria-controls="oil" aria-selected="false">오일</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bond10y-tab" data-bs-toggle="tab" data-bs-target="#bond10y" type="button" role="tab" aria-controls="bond10y" aria-selected="false">10년채권</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bond2y-tab" data-bs-toggle="tab" data-bs-target="#bond2y" type="button" role="tab" aria-controls="bond2y" aria-selected="false">2년채권</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="chartTabsContent">
+                        <div class="tab-pane fade show active" id="kospi" role="tabpanel" aria-labelledby="kospi-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_kospi"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nasdaq" role="tabpanel" aria-labelledby="nasdaq-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_nasdaq"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="sp500" role="tabpanel" aria-labelledby="sp500-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_sp500"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="bitcoin" role="tabpanel" aria-labelledby="bitcoin-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_bitcoin"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="dollar" role="tabpanel" aria-labelledby="dollar-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_dollar"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="gold" role="tabpanel" aria-labelledby="gold-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_gold"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="oil" role="tabpanel" aria-labelledby="oil-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_oil"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="bond10y" role="tabpanel" aria-labelledby="bond10y-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_bond10y"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="bond2y" role="tabpanel" aria-labelledby="bond2y-tab">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_bond2y"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TradingView Widget Script -->
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script type="text/javascript">
+    // TradingView 차트 설정
+    const chartConfigs = {
+        kospi: { symbol: 'KRX:KOSPI', interval: '1D' },
+        nasdaq: { symbol: 'NASDAQ:NDX', interval: '1D' },
+        sp500: { symbol: 'SPX', interval: '1D' },
+        bitcoin: { symbol: 'COINBASE:BTCUSD', interval: '1D' },
+        dollar: { symbol: 'TVC:DXY', interval: '1D' },
+        gold: { symbol: 'TVC:XAUUSD', interval: '1D' },
+        oil: { symbol: 'TVC:WTIUSD', interval: '1D' },
+        bond10y: { symbol: 'TVC:US10Y', interval: '1D' },
+        bond2y: { symbol: 'TVC:US02Y', interval: '1D' }
+    };
+
+    function initChart(chartId, config) {
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": config.symbol,
+            "interval": config.interval,
+            "timezone": "Asia/Seoul",
+            "theme": "light",
+            "style": "1",
+            "locale": "kr",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "withdateranges": true,
+            "range": "1M",
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "details": true,
+            "hotlist": true,
+            "calendar": true,
+            "studies": [
+                "RSI@tv-basicstudies",
+                "MACD@tv-basicstudies"
+            ],
+            "container_id": chartId
+        });
+    }
+
+    // 페이지 로드 시 첫 번째 차트 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        initChart('tradingview_kospi', chartConfigs.kospi);
+    });
+
+    // 탭 변경 시 차트 초기화
+    document.querySelectorAll('[data-bs-toggle="tab"]').forEach(function(tab) {
+        tab.addEventListener('shown.bs.tab', function(event) {
+            const target = event.target.getAttribute('data-bs-target').replace('#', '');
+            const chartId = 'tradingview_' + target;
+            const config = chartConfigs[target];
+            
+            if (config && !document.querySelector('#' + chartId + ' .tradingview-widget-container__widget')) {
+                initChart(chartId, config);
+            }
+        });
+    });
+</script>
+
+<style>
+.tradingview-widget-container {
+    height: 500px;
+}
+
+.tradingview-widget-container > div {
+    height: 100%;
+}
+</style>
+{% endblock %}

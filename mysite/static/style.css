@@ -1,0 +1,274 @@
+/* Twelve Data 스타일을 참고한 주식 차트 디자인 */
+
+/* 전체 배경 및 컨테이너 */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* 헤더 스타일 */
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 20px 20px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* 카드 스타일 */
+.stock-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    background: white;
+    overflow: hidden;
+}
+
+.stock-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stock-card .card-body {
+    padding: 1.5rem;
+}
+
+/* 종목 심볼 스타일 */
+.stock-symbol {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.stock-name {
+    color: #4a5568;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.stock-exchange {
+    color: #718096;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+/* 카테고리 배지 */
+.category-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-korean { background-color: #e6fffa; color: #234e52; }
+.badge-us { background-color: #fef5e7; color: #744210; }
+.badge-crypto { background-color: #f0fff4; color: #22543d; }
+.badge-forex { background-color: #ebf8ff; color: #2a4365; }
+.badge-commodity { background-color: #faf5ff; color: #44337a; }
+.badge-bond { background-color: #fff5f5; color: #742a2a; }
+
+/* 버튼 스타일 */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-outline-secondary {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-2px);
+}
+
+/* 차트 컨테이너 */
+.tradingview-widget-container {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    background: white;
+}
+
+/* 탭 스타일 */
+.nav-tabs {
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 8px 8px 0 0;
+    color: #4a5568;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    background-color: #f7fafc;
+    color: #2d3748;
+}
+
+.nav-tabs .nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+}
+
+/* 가격 표시 */
+.price-up {
+    color: #38a169;
+    font-weight: 600;
+}
+
+.price-down {
+    color: #e53e3e;
+    font-weight: 600;
+}
+
+.price-neutral {
+    color: #4a5568;
+    font-weight: 600;
+}
+
+/* 섹션 헤더 */
+.section-header {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.section-header h2 {
+    color: #2d3748;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: #718096;
+    margin-bottom: 0;
+}
+
+/* 실시간 데이터 카드 */
+.realtime-data-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+.realtime-data-card h6 {
+    color: #718096;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.realtime-data-card h5 {
+    color: #2d3748;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+/* 로딩 스피너 */
+.spinner-border {
+    color: #667eea;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .tradingview-widget-container {
+        height: 400px;
+    }
+    
+    .page-header {
+        padding: 2rem 0;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .tradingview-widget-container {
+        height: 300px;
+    }
+    
+    .stock-card .card-body {
+        padding: 1rem;
+    }
+    
+    .section-header {
+        padding: 1.5rem;
+    }
+    
+    .realtime-data-card {
+        padding: 1.5rem;
+    }
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stock-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.stock-card:nth-child(1) { animation-delay: 0.1s; }
+.stock-card:nth-child(2) { animation-delay: 0.2s; }
+.stock-card:nth-child(3) { animation-delay: 0.3s; }
+.stock-card:nth-child(4) { animation-delay: 0.4s; }
